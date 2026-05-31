@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Authorized } from 'src/guard/auth.guard';
 
