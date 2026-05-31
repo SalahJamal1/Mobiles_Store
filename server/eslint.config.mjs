@@ -34,6 +34,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
 
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
