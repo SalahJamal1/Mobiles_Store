@@ -33,10 +33,8 @@ export default function AuthPanel({
         <View style={styles.authLogoCircle}>
           <Ionicons name="phone-portrait-outline" size={40} color="#fff" />
         </View>
-        <Text style={styles.authTitle}>Mobile Desk Account</Text>
-        <Text style={styles.authSubtitle}>
-          Unlock loyalty rewards & track purchases
-        </Text>
+        <Text style={styles.authTitle}>Elite Mobile Account</Text>
+        <Text style={styles.authSubtitle}>Welcome to our store</Text>
       </LinearGradient>
 
       {/* Login / Signup Selector Pill */}

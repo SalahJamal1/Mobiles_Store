@@ -43,7 +43,7 @@ export default function Logo() {
           letterSpacing: 2,
         }}
       >
-        Luxe Shop
+        Elite Mobile
       </Text>
     </View>
   );
