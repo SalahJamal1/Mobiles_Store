@@ -2,7 +2,6 @@ import { RootState } from "@/store/store";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import BottomControls from "./BottomControls";
-import { Cart } from "./cartSlice";
 
 export default function CartList() {
   const { carts } = useSelector((state: RootState) => state.carts);
@@ -10,46 +9,49 @@ export default function CartList() {
   return (
     <View>
       {/* List Items */}
-      {carts.map((cart, i) => {
-        const currentCart = carts?.find(
-          (c: Cart) => c?.item?.id === cart?.item?.id,
-        );
-        return (
-          <View key={i} style={styles.card}>
-            <Image source={{ uri: cart.item.image }} style={styles.cardImage} />
-            <View style={styles.cardBody}>
-              <View style={styles.cardHeaderRow}>
-                <Text style={styles.itemCategory}>{cart.item.category}</Text>
-                {cart.item.badge && (
-                  <View style={styles.badgeContainer}>
-                    <Text style={styles.badgeText}>{cart.item.badge}</Text>
-                  </View>
-                )}
-              </View>
-              <Text style={styles.itemName} numberOfLines={1}>
-                {cart.item.name}
-              </Text>
-
-              <View style={styles.priceRow}>
-                <Text style={styles.itemPrice}>
-                  ${currentCart?.totalPrice.toFixed(2) || 0}
-                </Text>
-                {cart.item.originalPrice && (
-                  <Text style={styles.itemOriginalPrice}>
-                    $
-                    {(cart.item.originalPrice * currentCart!.quantity).toFixed(
-                      2,
-                    )}
-                  </Text>
-                )}
-              </View>
-
-              {/* Item Bottom Controls */}
-              <BottomControls quantity={cart.quantity} id={cart.item.id} />
+      {carts.map((cart, i) => (
+        <View key={i} style={styles.card}>
+          <Image source={{ uri: cart.item.image }} style={styles.cardImage} />
+          <View style={styles.cardBody}>
+            <View style={styles.cardHeaderRow}>
+              <Text style={styles.itemCategory}>{cart.item.category}</Text>
+              {cart.item.badge && (
+                <View style={styles.badgeContainer}>
+                  <Text style={styles.badgeText}>{cart.item.badge}</Text>
+                </View>
+              )}
             </View>
+            <Text style={styles.itemName} numberOfLines={1}>
+              {cart.item.name}{" "}
+              {cart.item.category === "Electronics" &&
+                cart.storageCapacity?.name}
+            </Text>
+
+            <View style={styles.priceRow}>
+              <Text style={styles.itemPrice}>
+                ${cart?.totalPrice.toFixed(2) || 0}
+              </Text>
+              {cart.item.originalPrice && (
+                <Text style={styles.itemOriginalPrice}>
+                  $
+                  {(
+                    (+cart?.item?.originalPrice +
+                      Number(cart?.storageCapacity?.extra || 0)) *
+                    cart?.quantity
+                  ).toFixed(2)}
+                </Text>
+              )}
+            </View>
+
+            {/* Item Bottom Controls */}
+            <BottomControls
+              quantity={cart.quantity}
+              id={cart.item.id}
+              capacityName={cart?.storageCapacity?.name ?? ""}
+            />
           </View>
-        );
-      })}
+        </View>
+      ))}
     </View>
   );
 }
@@ -109,7 +111,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: "#1f2937",
-    marginTop: 4,
+    marginTop: 7,
+  },
+  itemStorage: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: "#1f2937",
+    marginTop: 2,
   },
   priceRow: {
     flexDirection: "row",

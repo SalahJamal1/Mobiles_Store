@@ -1,3 +1,4 @@
+import { AppDispatch, RootState } from "@/store/store";
 import { CAPACITIES } from "@/utils/helpers";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -7,29 +8,27 @@ import {
   Text,
   View,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedCapacity } from "../carts/cartSlice";
 
-type Props = {
-  selectedCapacity: string;
-  setSelectedCapacity: (capacity: string) => void;
-};
+type Props = {};
 
-export default function StorageCapacity({
-  selectedCapacity,
-  setSelectedCapacity,
-}: Props) {
+export default function StorageCapacity({}: Props) {
+  const dispatch = useDispatch<AppDispatch>();
+  const { selectedCapacity } = useSelector((state: RootState) => state.carts);
   return (
     <View style={styles.storageRow}>
       {CAPACITIES.map((cap) => {
-        const isSelected = selectedCapacity === cap;
+        const isSelected = selectedCapacity.name === cap.name;
         return (
           <Pressable
-            key={cap}
+            key={cap.name}
             style={styles.storagePillPressable}
             onPress={() => {
               LayoutAnimation.configureNext(
                 LayoutAnimation.Presets.easeInEaseOut,
               );
-              setSelectedCapacity(cap);
+              dispatch(setSelectedCapacity(cap));
             }}
           >
             {isSelected ? (
@@ -39,11 +38,11 @@ export default function StorageCapacity({
                 end={{ x: 1, y: 1 }}
                 style={styles.storagePillActive}
               >
-                <Text style={styles.storagePillTextActive}>{cap}</Text>
+                <Text style={styles.storagePillTextActive}>{cap.name}</Text>
               </LinearGradient>
             ) : (
               <View style={styles.storagePillInactive}>
-                <Text style={styles.storagePillTextInactive}>{cap}</Text>
+                <Text style={styles.storagePillTextInactive}>{cap.name}</Text>
               </View>
             )}
           </Pressable>

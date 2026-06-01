@@ -21,7 +21,12 @@ export const getToken = async (): Promise<boolean> => {
   const token = await SecureStore.getItemAsync("jwt");
   return !!token;
 };
-export const CAPACITIES = ["128 GB", "256 GB", "512 GB", "1 TB"];
+export const CAPACITIES = [
+  { name: "128 GB", extra: 0 },
+  { name: "256 GB", extra: 100 },
+  { name: "512 GB", extra: 200 },
+  { name: "1 TB", extra: 300 },
+];
 
 export const DEFAULT_COLORS = [
   { name: "Space Gray", value: "#374151" },

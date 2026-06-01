@@ -7,8 +7,9 @@ import { decCart, incCart, removeFromCart } from "./cartSlice";
 type Props = {
   quantity: number;
   id?: number;
+  capacityName: string;
 };
-export default function BottomControls({ quantity, id }: Props) {
+export default function BottomControls({ quantity, id, capacityName }: Props) {
   const dispatch = useDispatch<AppDispatch>();
 
   const handelControllers = (e: any, type: "inc" | "dec" | "remove") => {
@@ -16,13 +17,13 @@ export default function BottomControls({ quantity, id }: Props) {
     if (!id) return;
     switch (type) {
       case "inc":
-        dispatch(incCart(id));
+        dispatch(incCart({ id, capacityName }));
         break;
       case "dec":
-        dispatch(decCart(id));
+        dispatch(decCart({ id, capacityName }));
         break;
       case "remove":
-        dispatch(removeFromCart(id));
+        dispatch(removeFromCart({ id, capacityName }));
         break;
       default:
         break;

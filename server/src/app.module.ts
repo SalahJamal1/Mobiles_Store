@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MobilesModule } from './product/product.module';
 import { CartModule } from './cart/cart.module';
-import { Cart } from './cart/cart';
+import { Cart } from './cart/cart.entity';
 import { OrderModule } from './order/order.module';
 import { Order } from './order/order';
 import { PaymentsModule } from './payments/payments.module';

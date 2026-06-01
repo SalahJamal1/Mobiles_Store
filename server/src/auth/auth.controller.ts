@@ -16,12 +16,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({ status: 201, description: 'User registered successfully' })
   @Post('register')
-  register(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-    @Body() authRegister: AuthRegister,
-  ) {
-    return this.service.register(req, res, authRegister);
+  register(@Req() req: Request, @Body() authRegister: AuthRegister) {
+    return this.service.register(req, authRegister);
   }
   @ApiOperation({ summary: 'Login user' })
   @ApiResponse({ status: 200, description: 'User logged in successfully' })
@@ -29,18 +25,18 @@ export class AuthController {
   @Serializer(AuthResponseDto)
   login(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+
     @Body() authLogin: AuthLogin,
   ) {
-    return this.service.login(req, res, authLogin);
+    return this.service.login(req, authLogin);
   }
 
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed' })
   @Post('refresh')
   @Serializer(AuthResponseDto)
-  refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return this.service.refresh(req, res);
+  refresh(@Req() req: Request) {
+    return this.service.refresh(req);
   }
 
   @ApiOperation({ summary: 'Logout user' })

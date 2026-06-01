@@ -1,7 +1,5 @@
-import { AppDispatch, RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Animated,
@@ -11,9 +9,8 @@ import {
   useAnimatedValue,
   View,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import BottomControls from "../carts/BottomControls";
-import { addToCart, type Cart, type Product } from "../carts/cartSlice";
+import { type Product } from "../carts/cartSlice";
+import { useRouter } from "expo-router";
 
 type Props = {
   item: Product;
@@ -23,11 +20,7 @@ export default function ProductCard({ item }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const anim = useAnimatedValue(0);
-  const dispatch = useDispatch<AppDispatch>();
-  const { carts } = useSelector((store: RootState) => store.carts);
-  const currentQty = carts?.find(
-    (c: Cart) => c?.item?.id === item?.id,
-  )?.quantity;
+
   useEffect(() => {
     anim.setValue(0);
     Animated.timing(anim, {
@@ -47,17 +40,8 @@ export default function ProductCard({ item }: Props) {
     outputRange: [5, 0],
   });
 
-  const AddToCart = (item: Product) => {
-    const newItem: Cart = { item, quantity: 1, totalPrice: item.price * 1 };
-
-    dispatch(addToCart(newItem));
-  };
   return (
-    <Pressable
-      key={item.id}
-      onPress={() => router.push(`/product/${item.id}`)}
-      style={styles.card}
-    >
+    <View key={item.id} style={styles.card}>
       <View style={styles.imageContainer}>
         {loading ? (
           <Text style={styles.imageError}>🌅</Text>
@@ -110,27 +94,18 @@ export default function ProductCard({ item }: Props) {
             <Text style={styles.oldPrice}>${item.originalPrice}</Text>
           )}
         </View>
-        {!currentQty ? (
-          <Pressable
-            onPress={(e) => {
-              e.stopPropagation();
-              AddToCart(item);
-            }}
+        <Pressable onPress={() => router.push(`/product/${item.id}`)}>
+          <LinearGradient
+            colors={["#2563eb", "#9333ea"]}
+            start={{ x: 1, y: 1 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.addButton}
           >
-            <LinearGradient
-              colors={["#2563eb", "#9333ea"]}
-              start={{ x: 1, y: 1 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.addButton}
-            >
-              <Text style={styles.addText}>+ Add</Text>
-            </LinearGradient>
-          </Pressable>
-        ) : (
-          <BottomControls quantity={currentQty} id={item.id} />
-        )}
+            <Text style={styles.addText}>View Product Details</Text>
+          </LinearGradient>
+        </Pressable>
       </View>
-    </Pressable>
+    </View>
   );
 }
 

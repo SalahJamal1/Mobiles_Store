@@ -22,7 +22,7 @@ export class AuthService {
     private usersService: UsersService,
   ) {}
 
-  async register(req: Request, res: Response, authRegister: AuthRegister) {
+  async register(req: Request, authRegister: AuthRegister) {
     const isExist = await this.usersService.findByEmail(authRegister.email);
     if (isExist !== null) {
       throw new BadRequestException('The user is already exists');
@@ -49,49 +49,57 @@ export class AuthService {
       throw new BadRequestException(err.message);
     }
   }
-  async login(req: Request, res: Response, authLogin: AuthLogin) {
-    const user = await this.usersService.findByEmail(authLogin.email);
-    if (user === null) {
-      throw new BadRequestException('Invalid email or password');
-    }
-
-    const isValidPassword = await bcryptjs.compare(
-      authLogin.password,
-      user.password,
-    );
-    if (!isValidPassword) {
-      throw new BadRequestException('Invalid email or password');
-    }
-
-    const deviceId = this.getOrCreateDeviceId(req);
-    return await this.getAuthResponse(res, deviceId, user);
-  }
-  async refresh(req: Request, res: Response) {
-    const refresh_jwt = req.headers['refresh_token'] as string;
-    const deviceId = this.getDeviceId(req);
-    if (!refresh_jwt || !deviceId) {
-      throw new UnauthorizedException('Invalid token');
-    }
+  async login(req: Request, authLogin: AuthLogin) {
     try {
-      jwt.verify(refresh_jwt, process.env.SECRET_KEY!);
-    } catch {
-      throw new UnauthorizedException('Invalid token');
-    }
-    const valid_token =
-      await this.tokenService.findTokenByRefreshTokenAndDeviceId(
-        refresh_jwt,
-        deviceId,
+      const user = await this.usersService.findByEmail(authLogin.email);
+      if (user === null) {
+        throw new BadRequestException('Invalid email or password');
+      }
+
+      const isValidPassword = await bcryptjs.compare(
+        authLogin.password,
+        user.password,
       );
-    if (!valid_token) {
-      throw new UnauthorizedException('Invalid token');
-    }
+      if (!isValidPassword) {
+        throw new BadRequestException('Invalid email or password');
+      }
 
-    const user = valid_token.user;
-    if (valid_token.tokenVersion !== user.tokenVersion) {
-      throw new UnauthorizedException('Invalid token');
+      const deviceId = this.getOrCreateDeviceId(req);
+      return await this.getAuthResponse(deviceId, user);
+    } catch (err: any) {
+      throw new BadRequestException(err.message);
     }
+  }
+  async refresh(req: Request) {
+    try {
+      const refresh_jwt = req.headers['refresh_token'] as string;
+      const deviceId = this.getDeviceId(req);
+      if (!refresh_jwt || !deviceId) {
+        throw new UnauthorizedException('Invalid token');
+      }
+      try {
+        jwt.verify(refresh_jwt, process.env.SECRET_KEY!);
+      } catch {
+        throw new UnauthorizedException('Invalid token');
+      }
+      const valid_token =
+        await this.tokenService.findTokenByRefreshTokenAndDeviceId(
+          refresh_jwt,
+          deviceId,
+        );
+      if (!valid_token) {
+        throw new UnauthorizedException('Invalid token');
+      }
 
-    return await this.getAuthResponse(res, deviceId, user);
+      const user = valid_token.user;
+      if (valid_token.tokenVersion !== user.tokenVersion) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      return await this.getAuthResponse(deviceId, user);
+    } catch (err: any) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   async logout(req: Request, res: Response) {
@@ -109,7 +117,7 @@ export class AuthService {
     );
   }
 
-  async getAuthResponse(res: Response, deviceId: string, user: Users) {
+  async getAuthResponse(deviceId: string, user: Users) {
     await this.tokenService.revokeAllValidTokenByUserIdAndDeviceId(
       deviceId,
       user.id,

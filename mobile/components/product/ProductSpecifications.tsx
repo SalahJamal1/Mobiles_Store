@@ -29,7 +29,6 @@ export default function ProductSpecifications({
   imageFadeAnim,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [selectedCapacity, setSelectedCapacity] = useState(CAPACITIES[1]);
 
   // Build color list from product data
   const productColors = product?.colorImages
@@ -101,13 +100,14 @@ export default function ProductSpecifications({
       />
 
       {/* Storage capacity pills */}
-      <Text style={[styles.sectionLabel, { marginTop: 24 }]}>
-        Storage Capacity
-      </Text>
-      <StorageCapacity
-        selectedCapacity={selectedCapacity}
-        setSelectedCapacity={setSelectedCapacity}
-      />
+      {product.category === "Electronics" && (
+        <>
+          <Text style={[styles.sectionLabel, { marginTop: 24 }]}>
+            Storage Capacity
+          </Text>
+          <StorageCapacity />
+        </>
+      )}
 
       <View style={styles.divider} />
 

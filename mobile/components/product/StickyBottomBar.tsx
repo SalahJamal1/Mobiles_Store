@@ -1,58 +1,46 @@
-import { Product } from "@/hooks/useProducts";
 import { AppDispatch, RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  Animated,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  useAnimatedValue,
-  View,
-} from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import BottomControls from "../carts/BottomControls";
-import { addToCart, Cart } from "../carts/cartSlice";
+import { addToCart, Cart, type Product } from "../carts/cartSlice";
 
 type Props = {
   product: Product;
 };
 
 export default function StickyBottomBar({ product }: Props) {
-  const toastFadeAnim = useAnimatedValue(0);
-  const { carts } = useSelector((store: RootState) => store.carts);
-  const currentItem = carts?.find((c) => c.item.id === product.id);
+  const { carts, selectedCapacity } = useSelector(
+    (store: RootState) => store.carts,
+  );
+  const currentItem = carts?.find((c) =>
+    c.item.category === "Electronics"
+      ? c.item.id === product.id &&
+        c?.storageCapacity?.name === selectedCapacity?.name
+      : c.item.id === product.id,
+  );
   const dispatch = useDispatch<AppDispatch>();
   const AddToCart = (item: Product) => {
-    const newItem: Cart = { item, quantity: 1, totalPrice: item.price * 1 };
+    const newItem: Cart = {
+      item,
+      quantity: 1,
+      totalPrice: Number(item.price) * 1,
+      storageCapacity:
+        (item.category === "Electronics" && selectedCapacity) || null,
+    };
 
     dispatch(addToCart(newItem));
   };
 
-  // Simulated add to basket with dynamic toast
-  const triggerAddToBasket = () => {
-    toastFadeAnim.setValue(0);
-    Animated.sequence([
-      Animated.timing(toastFadeAnim, {
-        toValue: 1,
-        duration: 350,
-        useNativeDriver: true,
-      }),
-      Animated.delay(1800),
-      Animated.timing(toastFadeAnim, {
-        toValue: 0,
-        duration: 350,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
   return (
     <View style={styles.footerSticky}>
       <View style={styles.priceContainer}>
         <Text style={styles.footerPriceLabel}>Total Price</Text>
         <Text style={styles.footerPriceVal}>
-          ${currentItem?.totalPrice ?? product.price}
+          $
+          {currentItem?.totalPrice ??
+            Number(product?.price) + selectedCapacity.extra}
         </Text>
       </View>
       {!currentItem?.quantity ? (
@@ -72,7 +60,11 @@ export default function StickyBottomBar({ product }: Props) {
           </LinearGradient>
         </Pressable>
       ) : (
-        <BottomControls quantity={currentItem?.quantity} id={product.id} />
+        <BottomControls
+          quantity={currentItem?.quantity}
+          capacityName={currentItem?.storageCapacity?.name ?? ""}
+          id={product.id}
+        />
       )}
     </View>
   );

@@ -12,6 +12,7 @@ export default function Cart() {
   const { carts } = useSelector((state: RootState) => state.carts);
   const [appliedPromo, setAppliedPromo] = useState("");
   if (!carts?.length) return <CartEmpty />;
+
   return (
     <View style={styles.screen}>
       {/* App Header Area */}

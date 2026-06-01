@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
-import { Cart } from 'src/cart/cart';
+import { Cart } from 'src/cart/cart.entity';
 
 export class CreateOrderDto {
   @IsString()
