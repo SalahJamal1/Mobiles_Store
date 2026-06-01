@@ -16,10 +16,13 @@ export default function OrderProductList({ order }: Props) {
           />
           <View style={styles.orderProductDetails}>
             <Text style={styles.orderProductName} numberOfLines={1}>
-              {cartItem.item.name}
+              {cartItem.item.name} {cartItem.storageCapacity?.name}
             </Text>
             <Text style={styles.orderProductSub}>
-              Qty: {cartItem.quantity} • ${cartItem.item.price} each
+              Qty: {cartItem.quantity} • $
+              {Number(cartItem.item.price) +
+                Number(cartItem.storageCapacity?.extra || 0)}{" "}
+              each
             </Text>
           </View>
         </View>

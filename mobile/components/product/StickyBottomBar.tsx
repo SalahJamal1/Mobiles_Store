@@ -20,6 +20,7 @@ export default function StickyBottomBar({ product }: Props) {
         c?.storageCapacity?.name === selectedCapacity?.name
       : c.item.id === product.id,
   );
+  console.log(currentItem);
   const dispatch = useDispatch<AppDispatch>();
   const AddToCart = (item: Product) => {
     const newItem: Cart = {
@@ -39,8 +40,11 @@ export default function StickyBottomBar({ product }: Props) {
         <Text style={styles.footerPriceLabel}>Total Price</Text>
         <Text style={styles.footerPriceVal}>
           $
-          {currentItem?.totalPrice ??
-            Number(product?.price) + selectedCapacity.extra}
+          {currentItem
+            ? currentItem?.totalPrice
+            : product.category === "Electronics"
+              ? Number(product?.price) + selectedCapacity.extra
+              : Number(product?.price)}
         </Text>
       </View>
       {!currentItem?.quantity ? (
